@@ -43,19 +43,9 @@ ops = [
             },
             arrayDiff: ["slot 1", "slot 2"],
             arrayUpdate: ["slot 0"],
-        }
-    ),
-    {
-        op: "MOVE",
-        key: "bruises",
-        target: 0,
-        dest: 1,
-    },
-    {
-        op: "DELETE",
-        key: "bruises",
-        target: 0,
-        tombstone: null,
-    }
+        },
+        "exmaples",
+        "uuid-v4-placeholder"
+    )
 ];
 console.log(ops);

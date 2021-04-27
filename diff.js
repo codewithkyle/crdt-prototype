@@ -7,8 +7,9 @@ function diffDeletes(current, input, keypath = ""){
             }
         } else {
             ops.push({
-                op: "DELETE",
-                key: keypath ? `${keypath}::${key}` : key,
+                op: "UNSET",
+                keypath: keypath ? `${keypath}::${key}` : key,
+                tombstone: current[key],
             });
         }
     }
@@ -25,7 +26,7 @@ function diffInserts(current, input, keypath = ""){
         } else {
             ops.push({
                 op: "SET",
-                key: keypath ? `${keypath}::${key}` : key,
+                keypath: keypath ? `${keypath}::${key}` : key,
                 value: input[key],
             });
         }
@@ -101,7 +102,7 @@ function diffChanges(current, input, keypath = ""){
                         if (override){
                             ops.push({
                                 op: "SET",
-                                key: keypath ? `${keypath}::${key}` : key,
+                                keypath: keypath ? `${keypath}::${key}` : key,
                                 value: input[key],
                             });
                         }
@@ -111,7 +112,7 @@ function diffChanges(current, input, keypath = ""){
                     if (current[key] !== input[key]){
                         ops.push({
                             op: "SET",
-                            key: keypath ? `${keypath}::${key}` : key,
+                            keypath: keypath ? `${keypath}::${key}` : key,
                             value: input[key],
                         });
                     }
@@ -122,11 +123,15 @@ function diffChanges(current, input, keypath = ""){
     return ops;
 }
 
-function diff(current, input){
+function diff(current, input, table, key){
     let ops = [];
     ops = [...ops, ...diffDeletes(current, input)];
     ops = [...ops, ...diffInserts(current, input)];
     ops = [...ops, ...diffChanges(current, input)];
+    for (let i = 0; i < ops.length; i++){
+        ops[i]["table"] = table;
+        ops[i]["key"] = key;
+    }
     return ops;
 }
 module.exports = diff;
